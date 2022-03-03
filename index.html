@@ -19,8 +19,10 @@
 				.success(function(data)
 				{
 					tokenPrice = parseFloat(data.price);
-					$("#token_price").text(tokenPrice.toFixed(2) + ' $');				
-					walletKeys.forEach(e => createNode(e));
+					$("#token_price").text(tokenPrice.toFixed(2) + ' $');	
+					for (var i = 0; i < walletKeys.length; i++) {
+					  setTimeout(createNode, 250 * (i + 1), walletKeys[i]);
+					}
 				});
 			}	
 			
