@@ -86,6 +86,11 @@
 					$("#node_online_" + nodeAddress).removeClass("text-success");
 					$("#node_online_" + nodeAddress).addClass("bi-x-circle-fill");
 					$("#node_online_" + nodeAddress).addClass("text-danger");
+					
+					$("#node_online").removeClass("bi-check-circle-fill");
+					$("#node_online").removeClass("text-success");
+					$("#node_online").addClass("bi-x-circle-fill");
+					$("#node_online").addClass("text-danger");
 				}
 				
 				$("#node_claim_last_" + nodeAddress).text(new Date(lastClaimTime).toLocaleString("de-DE"));
@@ -200,27 +205,28 @@
 	  </div>
 	</div>
 
-	<div class="shadow p-3 mb-3 bg-body">
-	<nav class="container-xxl flex-wrap flex-md-nowrap">
-	  <div class="container-fluid d-flex bd-highlight">
-		<a class="navbar-brand p-0 me-auto" href="#">
-			<i class="bi bi-speedometer"></i>
-			Streamr Dashboard
-		</a>
-		<button type="button" class="btn btn-primary bd-highlight" data-bs-toggle="modal" data-bs-target="#preferencesDialog">
-		  <i class="bi bi-gear-fill"></i>
-		</button>
-	  </div>
+	<nav class="navbar navbar-light bg-light shadow">
+		<div class="container d-flex">
+			<div class="navbar-brand text-primary">
+			  <i class="bi bi-speedometer"></i>
+			  Streamr Dashboard
+			</div>
+			<button type="button" class="btn btn-primary bd-highlight ms-auto" data-bs-toggle="modal" data-bs-target="#preferencesDialog">
+			  <i class="bi bi-gear-fill"></i>
+			</button>
+		</div>
 	</nav>
-	</div>
 	
-	<div class="container-xxl flex-wrap flex-md-nowrap">
+	<div class="p-2"></div>
+	
+	<div class="container flex-wrap flex-md-nowrap">
 		<div class="card h-100 shadow bg-body rounded">
 		  <div class="card-header">			  
 				<div class="d-flex bd-highlight">
 				  <div class="me-auto p-2 bd-highlight fs-5 fw-bold">Summary</div>
 				  <div class="p-2 bd-highlight fs-6 fw-bold" id="apr"></div>
 				  <div class="p-2 bd-highlight fs-6 fw-bold" id="token_price"></div>
+				  <i class="p-2 bd-highlight fs-6 fw-bold bi bi-check-circle-fill text-success" id="node_online"></i>
 				</div>
 			  </div>
 		  <div class="card-body p-4">
@@ -263,7 +269,7 @@
 					<div class="col">
 					  <div class="fs-6 fw-bold">Claims</div>
 					</div>
-					<div class="col-8" template-id="node_claims">
+					<div class="col-7" template-id="node_claims">
 					  
 					</div>
 				  </div>
@@ -271,7 +277,7 @@
 					<div class="col">
 					  <div class="fs-6 fw-bold">Rewards</div>
 					</div>
-					<div class="col-8" template-id="node_rewards">
+					<div class="col-7" template-id="node_rewards">
 					  
 					</div>
 				  </div>
@@ -279,7 +285,7 @@
 					<div class="col">
 					  <div class="fs-6 fw-bold">Rewards ($)</div>
 					</div>
-					<div class="col-8" template-id="node_rewards_dollar">
+					<div class="col-7" template-id="node_rewards_dollar">
 					
 					</div>
 				  </div>
@@ -287,7 +293,7 @@
 					<div class="col">
 					  <div class="fs-6 fw-bold">Balance</div>
 					</div>
-					<div class="col-8" template-id="node_balance">
+					<div class="col-7" template-id="node_balance">
 					
 					</div>
 				  </div>
@@ -295,7 +301,7 @@
 					<div class="col">
 					  <div class="fs-6 fw-bold">Balance ($)</div>
 					</div>
-					<div class="col-8" template-id="node_balance_dollar">
+					<div class="col-7" template-id="node_balance_dollar">
 					
 					</div>
 				  </div>
@@ -303,7 +309,7 @@
 					<div class="col">
 					  <div class="fs-6 fw-bold">Last claim</div>
 					</div>
-					<div class="col-8" template-id="node_claim_last">
+					<div class="col-7" template-id="node_claim_last">
 					
 					</div>
 				  </div>
@@ -311,7 +317,7 @@
 					<div class="col">
 					  <div class="fs-6 fw-bold">Last Txn</div>
 					</div>
-					<div class="col-8" template-id="node_txn_last">
+					<div class="col-7" template-id="node_txn_last">
 					
 					</div>
 				  </div>
