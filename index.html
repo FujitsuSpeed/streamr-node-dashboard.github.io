@@ -77,6 +77,10 @@
 				claims += data.claimCount;
 				$("#nodes_claims").text(claims);
 				
+				var monthlyClaims = parseFloat($("#nodes_claims_monthly").text());
+				monthlyClaims += data.claimedRewardCodes.filter(i => new Date(i.claimTime).getMonth() == new Date().getMonth()).length;
+				$("#nodes_claims_monthly").text(monthlyClaims);
+				
 				var lastClaimTime = data.claimedRewardCodes.pop().claimTime;
 				var twoHours = 2 * 60 * 60 * 1000;
 				var nowData = new Date();
@@ -95,26 +99,11 @@
 				
 				$("#node_claim_last_" + nodeAddress).text(new Date(lastClaimTime).toLocaleString("de-DE"));
 			});
-			$.get('https://brubeck1.streamr.network:3013/datarewards/' + nodeAddress)
-			.success(function(data)
-			{
-				$("#node_rewards_" + nodeAddress).text(data.DATA);
-				var rewardTokens = parseFloat(data.DATA);
-				var rewardDollar = tokenPrice * rewardTokens;
-				$("#node_rewards_dollar_" + nodeAddress).text(rewardDollar.toFixed(2));
-				
-				var rewards = parseFloat($("#nodes_rewards").text());
-				rewards += data.DATA;
-				$("#nodes_rewards").text(rewards.toFixed(2));
-				
-				var rewardDollarTotal = parseFloat($("#nodes_rewards_dollar").text());
-				rewardDollarTotal += rewardDollar;
-				$("#nodes_rewards_dollar").text(rewardDollarTotal.toFixed(2));		
-			});
 			$.get('https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress=0x3a9A81d576d83FF21f26f325066054540720fC34&apikey=' + Cookies.get('apikey') + '&address=' + nodeAddress)
 			.success(function(data)
 			{			
 				var balance = 0;
+				var receivedRewards = 0;
 				data.result.forEach(e => 
 				{
 					var amount = parseFloat(e.value);
@@ -126,7 +115,11 @@
 					}
 					else {
 						balance -= amount;
-					}					
+					}	
+
+					if (e.from == '0x3979F7D6b5C5bFA4Bcd441b4f35bfA0731CcfAEf'.toLowerCase()) {
+						receivedRewards += amount;
+					}
 				});
 					
 				var balanceDollar = tokenPrice * balance;
@@ -140,7 +133,40 @@
 				
 				var balanceDollarTotal = parseFloat($("#nodes_balance_dollar").text());
 				balanceDollarTotal += balanceDollar;
-				$("#nodes_balance_dollar").text(balanceDollarTotal.toFixed(2));	
+				$("#nodes_balance_dollar").text(balanceDollarTotal.toFixed(2));					
+				
+				$.get('https://brubeck1.streamr.network:3013/datarewards/' + nodeAddress)
+				.success(function(data)
+				{
+					$("#node_rewards_" + nodeAddress).text(data.DATA);
+					var rewardTokens = parseFloat(data.DATA);
+					var rewardDollar = tokenPrice * rewardTokens;
+					$("#node_rewards_dollar_" + nodeAddress).text(rewardDollar.toFixed(2));
+					
+					var rewards = parseFloat($("#nodes_rewards").text());
+					rewards += data.DATA;
+					$("#nodes_rewards").text(rewards.toFixed(2));
+					
+					var rewardDollarTotal = parseFloat($("#nodes_rewards_dollar").text());
+					rewardDollarTotal += rewardDollar;
+					$("#nodes_rewards_dollar").text(rewardDollarTotal.toFixed(2));	
+					
+					var monthlyRewards = parseFloat($("#nodes_rewards_monthly").text());
+					monthlyRewards += rewardTokens - receivedRewards;
+					$("#nodes_rewards_monthly").text(monthlyRewards.toFixed(2));	
+					
+					var monthlyDollarRewards = parseFloat($("#nodes_rewards_dollar_monthly").text());
+					monthlyDollarRewards += (rewardTokens - receivedRewards) * tokenPrice;
+					$("#nodes_rewards_dollar_monthly").text(monthlyDollarRewards.toFixed(2));
+					
+					monthlyRewards = parseFloat($("#nodes_balance_monthly").text());
+					monthlyRewards += receivedRewards;
+					$("#nodes_balance_monthly").text(monthlyRewards.toFixed(2));	
+					
+					monthlyDollarRewards = parseFloat($("#nodes_balance_dollar_monthly").text());
+					monthlyDollarRewards += receivedRewards * tokenPrice;
+					$("#nodes_balance_dollar_monthly").text(monthlyDollarRewards.toFixed(2));			
+				});
 			});
 		}
 		
@@ -233,23 +259,28 @@
 			<div class="row">
 			  <div class="col-md">
 			    <div class="fs-6 fw-bold">Claims</div>
-			    <div id="nodes_claims">0</div>
+				<div id="nodes_claims">0</div>
+				<div id="nodes_claims_monthly" class="text-success">0</div>		
 			  </div>
 			  <div class="col-md">
 			    <div class="fs-6 fw-bold">Rewards</div>
 			    <div id="nodes_rewards">0</div>
+				<div id="nodes_rewards_monthly" class="text-success">0</div>		
 			  </div>
 			  <div class="col-md">
 			    <div class="fs-6 fw-bold">Rewards ($)</div>
 			    <div id="nodes_rewards_dollar">0</div>
+				<div id="nodes_rewards_dollar_monthly" class="text-success">0</div>
 			  </div>
 			  <div class="col-md">
 			    <div class="fs-6 fw-bold">Balance</div>
 			    <div id="nodes_balance">0</div>
+				<div id="nodes_balance_monthly" class="text-success">0</div>
 			  </div>
 			  <div class="col-md">
 			    <div class="fs-6 fw-bold">Balance ($)</div>
 			    <div id="nodes_balance_dollar">0</div>
+				<div id="nodes_balance_dollar_monthly" class="text-success">0</div>
 			  </div>
 			</div>
 		  </div>
