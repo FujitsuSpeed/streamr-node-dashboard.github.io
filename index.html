@@ -1,410 +1,415 @@
 <!DOCTYPE html>
 <html>
+
 <head lang="en">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-	
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-	
+
 	<script type="text/javascript">
 		var tokenPrice;
-		
-		function update() {	
-			var walletKeys = Cookies.get("walletKeys");		
+
+		function update() {
+			var walletKeys = Cookies.get("walletKeys");
 			if (walletKeys != undefined) {
-			  walletKeys = JSON.parse(walletKeys);
-			  $.get('https://api.binance.com/api/v3/ticker/price?symbol=DATAUSDT')
-				.success(function(data)
-				{
-					tokenPrice = parseFloat(data.price);
-					$("#token_price").text(tokenPrice.toFixed(2) + ' $');	
-					for (var i = 0; i < walletKeys.length; i++) {
-					  setTimeout(createNode, 250 * (i + 1), walletKeys[i]);
-					}
-				});
-			}	
-			
-			if (Cookies.get('securusKey') != undefined) {
-			/*
-				$.get('https://explorer.securuscoin.com/api/getbalance/?address=' + Cookies.get('securusKey'))
-				.success(function(data)
-				{	
-					//securus_dollar
-					var balance = parseFloat(data.balance);		
-					$("#securus_token").text(balance.toFixed(2));
-				});
-				
-				$.ajax({
-					url: 'https://explorer.securuscoin.com/api/getbalance/?address=' + Cookies.get('securusKey'),
-					type: 'GET',
-					data: '',
-					crossDomain: true,
-					dataType: 'text',
-					attrs: { nonce: "EDNnf03nceIOfn39fn3e9h3sdfa" },
-					success: function() { alert("Success"); },
-					error: function() { alert('Failed!'); }
-				});*/
+				walletKeys = JSON.parse(walletKeys);
+				$.get('https://api.binance.com/api/v3/ticker/price?symbol=DATAUSDT')
+					.success(function (data) {
+						tokenPrice = parseFloat(data.price);
+						$("#token_price").text(tokenPrice.toFixed(2) + ' $');
+						for (var i = 0; i < walletKeys.length; i++) {
+							setTimeout(createNode, 250 * (i + 1), walletKeys[i]);
+						}
+					});
 			}
-			
+
+			if (Cookies.get('securusKey') != undefined) {
+				/*
+					$.get('https://explorer.securuscoin.com/api/getbalance/?address=' + Cookies.get('securusKey'))
+					.success(function(data)
+					{	
+						//securus_dollar
+						var balance = parseFloat(data.balance);		
+						$("#securus_token").text(balance.toFixed(2));
+					});
+					
+					$.ajax({
+						url: 'https://explorer.securuscoin.com/api/getbalance/?address=' + Cookies.get('securusKey'),
+						type: 'GET',
+						data: '',
+						crossDomain: true,
+						dataType: 'text',
+						attrs: { nonce: "EDNnf03nceIOfn39fn3e9h3sdfa" },
+						success: function() { alert("Success"); },
+						error: function() { alert('Failed!'); }
+					});*/
+			}
+
 			$.get('https://brubeck1.streamr.network:3013/apy')
-			.success(function(data)
-			{
-				$("#apr").text(data['spot-APR'] + ' %');		
+				.success(function (data) {
+					$("#apr").text(data['spot-APR'] + ' %');
+				});
+
+			$("#preferencesDialog").on("shown.bs.modal", function () {
+				updatePreferences();
 			});
 
-			$("#preferencesDialog").on("shown.bs.modal", function() {
-				updatePreferences();
-			});	
-
-			$("#button-add-walletKey").on("click", function() {				
-				var walletKeys = Cookies.get("walletKeys");		
-				var newWalletKey = $("#walletKey").val();	
+			$("#button-add-walletKey").on("click", function () {
+				var walletKeys = Cookies.get("walletKeys");
+				var newWalletKey = $("#walletKey").val();
 				if (walletKeys == undefined) {
-				  walletKeys = [newWalletKey];
+					walletKeys = [newWalletKey];
 				} else {
-				  walletKeys = JSON.parse(walletKeys);
-				  walletKeys.push(newWalletKey);	
+					walletKeys = JSON.parse(walletKeys);
+					walletKeys.push(newWalletKey);
 				}
 				Cookies.set('walletKeys', JSON.stringify(walletKeys), { expires: 5000 });
-				$("#walletKey").val("");				
+				$("#walletKey").val("");
 				console.log(newWalletKey);
 				updatePreferences();
-			});	
+			});
 
-			$("#button-update-apikey").on("click", function() {				
-				Cookies.set('apikey', $("#apiKey").val(), { expires: 5000 });		
-			});	
+			$("#button-update-apikey").on("click", function () {
+				Cookies.set('apikey', $("#apiKey").val(), { expires: 5000 });
+			});
 
-			$("#button-update-securuskey").on("click", function() {				
-				Cookies.set('securusKey', $("#securusKey").val(), { expires: 5000 });		
-			});	
+			$("#button-update-securuskey").on("click", function () {
+				Cookies.set('securusKey', $("#securusKey").val(), { expires: 5000 });
+			});
 		}
-		
+
 		function createNode(nodeAddress) {
 			var template = $("#nodeTemplate").clone();
 			template.removeClass("d-none");
-			template.find("[template-id=node_claims]").attr("id","node_claims_" + nodeAddress);
-			template.find("[template-id=node_rewards]").attr("id","node_rewards_" + nodeAddress);
-			template.find("[template-id=node_rewards_dollar]").attr("id","node_rewards_dollar_" + nodeAddress);
-			template.find("[template-id=node_balance]").attr("id","node_balance_" + nodeAddress);
-			template.find("[template-id=node_balance_dollar]").attr("id","node_balance_dollar_" + nodeAddress);
-			template.find("[template-id=node_claim_last]").attr("id","node_claim_last_" + nodeAddress);
-			template.find("[template-id=node_txn_last]").attr("id","node_txn_last_" + nodeAddress);
-			template.find("[template-id=node_online]").attr("id","node_online_" + nodeAddress);
+			template.find("[template-id=node_claims]").attr("id", "node_claims_" + nodeAddress);
+			template.find("[template-id=node_rewards]").attr("id", "node_rewards_" + nodeAddress);
+			template.find("[template-id=node_rewards_dollar]").attr("id", "node_rewards_dollar_" + nodeAddress);
+			template.find("[template-id=node_balance]").attr("id", "node_balance_" + nodeAddress);
+			template.find("[template-id=node_balance_dollar]").attr("id", "node_balance_dollar_" + nodeAddress);
+			template.find("[template-id=node_claim_last]").attr("id", "node_claim_last_" + nodeAddress);
+			template.find("[template-id=node_txn_last]").attr("id", "node_txn_last_" + nodeAddress);
+			template.find("[template-id=node_online]").attr("id", "node_online_" + nodeAddress);
 			template.appendTo("#nodeCards");
-			
-			$.get('https://brubeck1.streamr.network:3013/stats/' + nodeAddress)
-			.success(function(data)
-			{
-				$("#node_claims_" + nodeAddress).text(data.claimCount);
-				var claims = parseFloat($("#nodes_claims").text());
-				claims += data.claimCount;
-				$("#nodes_claims").text(claims);
-				
-				var monthlyClaims = parseFloat($("#nodes_claims_monthly").text());
-				monthlyClaims += data.claimedRewardCodes.filter(i => new Date(i.claimTime).getMonth() == new Date().getMonth()).length;
-				$("#nodes_claims_monthly").text(monthlyClaims);
-				
-				var lastClaimTime = data.claimedRewardCodes.pop().claimTime;
-				var twoHours = 2 * 60 * 60 * 1000;
-				var nowData = new Date();
-				var claimDate = new Date(lastClaimTime);
-				if((nowData - claimDate) > twoHours){
-					$("#node_online_" + nodeAddress).removeClass("bi-check-circle-fill");
-					$("#node_online_" + nodeAddress).removeClass("text-success");
-					$("#node_online_" + nodeAddress).addClass("bi-x-circle-fill");
-					$("#node_online_" + nodeAddress).addClass("text-danger");
-					
-					$("#node_online").removeClass("bi-check-circle-fill");
-					$("#node_online").removeClass("text-success");
-					$("#node_online").addClass("bi-x-circle-fill");
-					$("#node_online").addClass("text-danger");
-				}
-				
-				$("#node_claim_last_" + nodeAddress).text(new Date(lastClaimTime).toLocaleString("de-DE"));
-			});
-			$.get('https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress=0x3a9A81d576d83FF21f26f325066054540720fC34&apikey=' + Cookies.get('apikey') + '&address=' + nodeAddress)
-			.success(function(data)
-			{			
-				var balance = 0;
-				var receivedRewards = 0;
-				data.result.forEach(e => 
-				{
-					var amount = parseFloat(e.value);
-					var tokenDecimal = parseFloat(e.tokenDecimal);
-					var toAddress = e.to.toLowerCase();
-					amount = amount / Math.pow(10, tokenDecimal);
-					if (toAddress.toLowerCase() == nodeAddress.toLowerCase()) {
-						balance += amount;
-					}
-					else {
-						balance -= amount;
-					}	
 
-					if (e.from == '0x3979F7D6b5C5bFA4Bcd441b4f35bfA0731CcfAEf'.toLowerCase()) {
-						receivedRewards += amount;
+			$.get('https://brubeck1.streamr.network:3013/stats/' + nodeAddress)
+				.success(function (data) {
+					$("#node_claims_" + nodeAddress).text(data.claimCount);
+					var claims = parseFloat($("#nodes_claims").text());
+					claims += data.claimCount;
+					$("#nodes_claims").text(claims);
+
+					var monthlyClaims = parseFloat($("#nodes_claims_monthly").text());
+					monthlyClaims += data.claimedRewardCodes.filter(i => new Date(i.claimTime).getMonth() == new Date().getMonth()).length;
+					$("#nodes_claims_monthly").text(monthlyClaims);
+
+					var lastClaimTime = data.claimedRewardCodes.pop().claimTime;
+					var twoHours = 2 * 60 * 60 * 1000;
+					var nowData = new Date();
+					var claimDate = new Date(lastClaimTime);
+					if ((nowData - claimDate) > twoHours) {
+						$("#node_online_" + nodeAddress).removeClass("bg-success");
+						$("#node_online_" + nodeAddress).addClass("bg-danger");
+						$("#node_online_" + nodeAddress).text("Offline");
+
+						$("#node_online").removeClass("bg-success");
+						$("#node_online").addClass("bg-danger");
+						$("#node_online").text("Offline");
 					}
+
+					$("#node_claim_last_" + nodeAddress).text(new Date(lastClaimTime).toLocaleString("de-DE"));
 				});
-					
-				var balanceDollar = tokenPrice * balance;
-				$("#node_balance_" + nodeAddress).text(balance.toFixed(2));
-				$("#node_balance_dollar_" + nodeAddress).text(balanceDollar.toFixed(2));
-				$("#node_txn_last_" + nodeAddress).text(new Date(data.result.pop().timeStamp * 1000).toLocaleString("de-DE"));
-				
-				var balanceTotal = parseFloat($("#nodes_balance").text());
-				balanceTotal += balance;
-				$("#nodes_balance").text(balanceTotal.toFixed(2));	
-				
-				var balanceDollarTotal = parseFloat($("#nodes_balance_dollar").text());
-				balanceDollarTotal += balanceDollar;
-				$("#nodes_balance_dollar").text(balanceDollarTotal.toFixed(2));					
-				
-				$.get('https://brubeck1.streamr.network:3013/datarewards/' + nodeAddress)
-				.success(function(data)
-				{
-					$("#node_rewards_" + nodeAddress).text(data.DATA);
-					var rewardTokens = parseFloat(data.DATA);
-					var rewardDollar = tokenPrice * rewardTokens;
-					$("#node_rewards_dollar_" + nodeAddress).text(rewardDollar.toFixed(2));
-					
-					var rewards = parseFloat($("#nodes_rewards").text());
-					rewards += data.DATA;
-					$("#nodes_rewards").text(rewards.toFixed(2));
-					
-					var rewardDollarTotal = parseFloat($("#nodes_rewards_dollar").text());
-					rewardDollarTotal += rewardDollar;
-					$("#nodes_rewards_dollar").text(rewardDollarTotal.toFixed(2));	
-					
-					var monthlyRewards = parseFloat($("#nodes_rewards_monthly").text());
-					monthlyRewards += rewardTokens - receivedRewards;
-					$("#nodes_rewards_monthly").text(monthlyRewards.toFixed(2));	
-					
-					var monthlyDollarRewards = parseFloat($("#nodes_rewards_dollar_monthly").text());
-					monthlyDollarRewards += (rewardTokens - receivedRewards) * tokenPrice;
-					$("#nodes_rewards_dollar_monthly").text(monthlyDollarRewards.toFixed(2));
-					
-					monthlyRewards = parseFloat($("#nodes_balance_monthly").text());
-					monthlyRewards += receivedRewards;
-					$("#nodes_balance_monthly").text(monthlyRewards.toFixed(2));	
-					
-					monthlyDollarRewards = parseFloat($("#nodes_balance_dollar_monthly").text());
-					monthlyDollarRewards += receivedRewards * tokenPrice;
-					$("#nodes_balance_dollar_monthly").text(monthlyDollarRewards.toFixed(2));			
+			$.get('https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress=0x3a9A81d576d83FF21f26f325066054540720fC34&apikey=' + Cookies.get('apikey') + '&address=' + nodeAddress)
+				.success(function (data) {
+					var balance = 0;
+					var receivedRewards = 0;
+					data.result.forEach(e => {
+						var amount = parseFloat(e.value);
+						var tokenDecimal = parseFloat(e.tokenDecimal);
+						var toAddress = e.to.toLowerCase();
+						amount = amount / Math.pow(10, tokenDecimal);
+						if (toAddress.toLowerCase() == nodeAddress.toLowerCase()) {
+							balance += amount;
+						}
+						else {
+							balance -= amount;
+						}
+
+						if (e.from == '0x3979F7D6b5C5bFA4Bcd441b4f35bfA0731CcfAEf'.toLowerCase()) {
+							receivedRewards += amount;
+						}
+					});
+
+					var balanceDollar = tokenPrice * balance;
+					$("#node_balance_" + nodeAddress).text(balance.toFixed(2));
+					$("#node_balance_dollar_" + nodeAddress).text(balanceDollar.toFixed(2));
+					$("#node_txn_last_" + nodeAddress).text(new Date(data.result.pop().timeStamp * 1000).toLocaleString("de-DE"));
+
+					var balanceTotal = parseFloat($("#nodes_balance").text());
+					balanceTotal += balance;
+					$("#nodes_balance").text(balanceTotal.toFixed(2));
+
+					var balanceDollarTotal = parseFloat($("#nodes_balance_dollar").text());
+					balanceDollarTotal += balanceDollar;
+					$("#nodes_balance_dollar").text(balanceDollarTotal.toFixed(2));
+
+					$.get('https://brubeck1.streamr.network:3013/datarewards/' + nodeAddress)
+						.success(function (data) {
+							$("#node_rewards_" + nodeAddress).text(data.DATA);
+							var rewardTokens = parseFloat(data.DATA);
+							var rewardDollar = tokenPrice * rewardTokens;
+							$("#node_rewards_dollar_" + nodeAddress).text(rewardDollar.toFixed(2));
+
+							var rewards = parseFloat($("#nodes_rewards").text());
+							rewards += data.DATA;
+							$("#nodes_rewards").text(rewards.toFixed(2));
+
+							var rewardDollarTotal = parseFloat($("#nodes_rewards_dollar").text());
+							rewardDollarTotal += rewardDollar;
+							$("#nodes_rewards_dollar").text(rewardDollarTotal.toFixed(2));
+
+							var monthlyRewards = parseFloat($("#nodes_rewards_monthly").text());
+							monthlyRewards += rewardTokens - receivedRewards;
+							$("#nodes_rewards_monthly").text(monthlyRewards.toFixed(2));
+
+							var monthlyDollarRewards = parseFloat($("#nodes_rewards_dollar_monthly").text());
+							monthlyDollarRewards += (rewardTokens - receivedRewards) * tokenPrice;
+							$("#nodes_rewards_dollar_monthly").text(monthlyDollarRewards.toFixed(2));
+
+							monthlyRewards = parseFloat($("#nodes_balance_monthly").text());
+							monthlyRewards += receivedRewards;
+							$("#nodes_balance_monthly").text(monthlyRewards.toFixed(2));
+
+							monthlyDollarRewards = parseFloat($("#nodes_balance_dollar_monthly").text());
+							monthlyDollarRewards += receivedRewards * tokenPrice;
+							$("#nodes_balance_dollar_monthly").text(monthlyDollarRewards.toFixed(2));
+						});
 				});
-			});
 		}
-		
-		function updatePreferences() {			
+
+		function updatePreferences() {
 			$("#currentWalletKeys").empty();
 			$("#apiKey").val(Cookies.get('apikey'));
-			$("#securusKey").val(Cookies.get('securusKey'));			
-			var walletKeys = JSON.parse(Cookies.get("walletKeys"));				
-			walletKeys.forEach(e => 
-			{
+			$("#securusKey").val(Cookies.get('securusKey'));
+			var walletKeys = JSON.parse(Cookies.get("walletKeys"));
+			walletKeys.forEach(e => {
 				var template = $("#walletKeyTemplate").clone();
 				template.removeClass("d-none");
-				template.find("[template-id=walletKey_id]").attr("id","walletKey_id_" + e);
-				template.find("[template-id=button-remove-walletKey]").attr("id","button-remove-walletKey_" + e);
+				template.find("[template-id=walletKey_id]").attr("id", "walletKey_id_" + e);
+				template.find("[template-id=button-remove-walletKey]").attr("id", "button-remove-walletKey_" + e);
 				template.appendTo("#currentWalletKeys");
 				$("#walletKey_id_" + e).text(e);
-				$("#button-remove-walletKey_" + e).on("click", function() {			
+				$("#button-remove-walletKey_" + e).on("click", function () {
 					var currentIndex = walletKeys.indexOf(e);
 					walletKeys.splice(currentIndex, 1);
 					Cookies.set('walletKeys', JSON.stringify(walletKeys), { expires: 5000 });
 					updatePreferences();
-				});	
-			});	
+				});
+			});
 		}
 	</script>
-	
+
 </head>
+
 <body onload="update()">
-	<div class="modal fade" id="preferencesDialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-	  <div class="modal-dialog">
-		<div class="modal-content">
-		  <div class="modal-header">
-			<h5 class="modal-title" id="staticBackdropLabel">Configuration</h5>
-			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-		  </div>
-		  <div class="modal-body">
-			<div class="mb-3">
-			  <label for="apiKey" class="form-label">Update API Key</label>
-			  <div class="input-group">
-				<input type="text" class="form-control" id="apiKey" placeholder="123ABC...">
-				<button class="btn btn-primary" type="button" id="button-update-apikey">Update</button>
-			  </div>
+	<div class="modal fade" id="preferencesDialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabel">Configuration</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="apiKey" class="form-label">Update API Key</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="apiKey" placeholder="123ABC...">
+							<button class="btn btn-primary" type="button" id="button-update-apikey">Update</button>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="securusKey" class="form-label">Update Securus Key</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="securusKey" placeholder="123ABC...">
+							<button class="btn btn-primary" type="button" id="button-update-securuskey">Update</button>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="walletKey" class="form-label">Add Node Address</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="walletKey" placeholder="0x...">
+							<button class="btn btn-primary" type="button" id="button-add-walletKey">Add</button>
+						</div>
+					</div>
+
+					<li id="walletKeyTemplate"
+						class="list-group-item d-flex justify-content-between align-items-center d-none">
+						<div template-id="walletKey_id"></div>
+						<button class="btn btn-danger" type="button"
+							template-id="button-remove-walletKey">Remove</button>
+					</li>
+					<label class="form-label">Remove Node Address</label>
+					<ul class="list-group" id="currentWalletKeys">
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
 			</div>
-			<div class="mb-3">
-			  <label for="securusKey" class="form-label">Update Securus Key</label>
-			  <div class="input-group">
-				<input type="text" class="form-control" id="securusKey" placeholder="123ABC...">
-				<button class="btn btn-primary" type="button" id="button-update-securuskey">Update</button>
-			  </div>
-			</div>
-			<div class="mb-3">
-			  <label for="walletKey" class="form-label">Add Node Address</label>
-			  <div class="input-group">
-				<input type="text" class="form-control" id="walletKey" placeholder="0x...">
-				<button class="btn btn-primary" type="button" id="button-add-walletKey">Add</button>
-			  </div>
-			</div>
-			
-			<li id="walletKeyTemplate" class="list-group-item d-flex justify-content-between align-items-center d-none">
-			  <div template-id="walletKey_id"></div>				
-			  <button class="btn btn-danger" type="button" template-id="button-remove-walletKey">Remove</button>
-		    </li>
-			<label class="form-label">Remove Node Address</label>		
-			<ul class="list-group" id="currentWalletKeys">	  
-			</ul>
-		  </div>
-		  <div class="modal-footer">
-			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-		  </div>
 		</div>
-	  </div>
 	</div>
 
 	<nav class="navbar navbar-light bg-light shadow">
 		<div class="container d-flex">
 			<div class="navbar-brand text-primary">
-			  <i class="bi bi-speedometer"></i>
-			  Streamr Dashboard
+				<i class="bi bi-speedometer"></i>
+				Streamr Dashboard
 			</div>
-			<button type="button" class="btn btn-primary bd-highlight ms-auto" data-bs-toggle="modal" data-bs-target="#preferencesDialog">
-			  <i class="bi bi-gear-fill"></i>
+			<button type="button" class="btn btn-primary bd-highlight ms-auto" data-bs-toggle="modal"
+				data-bs-target="#preferencesDialog">
+				<i class="bi bi-gear-fill"></i>
 			</button>
 		</div>
 	</nav>
-	
+
 	<div class="p-2"></div>
-	
+
 	<div class="container flex-wrap flex-md-nowrap">
-		<div class="card h-100 shadow bg-body rounded">
-		  <div class="card-header">			  
-				<div class="d-flex bd-highlight">
-				  <div class="me-auto p-2 bd-highlight fs-5 fw-bold">Summary</div>
-				  <div class="p-2 bd-highlight fs-6 fw-bold" id="apr"></div>
-				  <div class="p-2 bd-highlight fs-6 fw-bold" id="token_price"></div>
-				  <i class="p-2 bd-highlight fs-6 fw-bold bi bi-check-circle-fill text-success" id="node_online"></i>
+		<div class="card h-100 shadow bg-body" style="border-radius: .50rem!important;">
+			<div class="card-body">
+				<div class="card-title">
+					<div class="d-flex bd-highlight">
+						<div class="me-auto p-2 bd-highlight fs-5 fw-bold">Summary</div>
+						<div class="p-2 bd-highlight fs-6 fw-bold" id="apr"></div>
+						<div class="p-2 bd-highlight fs-6 fw-bold" id="token_price"></div>
+						<span id="node_online" class="p-2 bd-highlight badge rounded-pill bg-success"
+							style="height: fit-content;">Online</span>
+					</div>
 				</div>
-			  </div>
-		  <div class="card-body p-4">
-			<div class="container">
-			  <div class="row row-cols-3 row-cols-lg-6 g-2 g-lg-3">
-				  <div class="col">
-					<div class="fs-6 fw-bold">Claims</div>
-					<div id="nodes_claims">0</div>
-					<div id="nodes_claims_monthly" class="text-success">0</div>		
-				  </div>
-				  <div class="col">
-					<div class="fs-6 fw-bold">Rewards</div>
-					<div id="nodes_rewards">0</div>
-					<div id="nodes_rewards_monthly" class="text-success">0</div>		
-				  </div>
-				  <div class="col">
-					<div class="fs-6 fw-bold">Rewards ($)</div>
-					<div id="nodes_rewards_dollar">0</div>
-					<div id="nodes_rewards_dollar_monthly" class="text-success">0</div>
-				  </div>
-				  <div class="col">
-					<div class="fs-6 fw-bold">Balance</div>
-					<div id="nodes_balance">0</div>
-					<div id="nodes_balance_monthly" class="text-success">0</div>
-				  </div>
-				  <div class="col">
-					<div class="fs-6 fw-bold">Balance ($)</div>
-					<div id="nodes_balance_dollar">0</div>
-					<div id="nodes_balance_dollar_monthly" class="text-success">0</div>
-				  </div>
-				  <div class="col">
-					<div class="fs-6 fw-bold">Securus</div>
-					<div id="securus_token">0</div>
-					<div id="securus_dollar" class="text-success">0</div>
-				  </div>
-			  </div>
+				<div class="container">
+					<div class="row row-cols-3 row-cols-lg-6 g-2 g-lg-3">
+						<div class="col">
+							<div class="fs-6 fw-bold">Claims</div>
+							<div id="nodes_claims">0</div>
+							<div id="nodes_claims_monthly" class="text-success">0</div>
+						</div>
+						<div class="col">
+							<div class="fs-6 fw-bold">Rewards</div>
+							<div id="nodes_rewards">0</div>
+							<div id="nodes_rewards_monthly" class="text-success">0</div>
+						</div>
+						<div class="col">
+							<div class="fs-6 fw-bold">Rewards ($)</div>
+							<div id="nodes_rewards_dollar">0</div>
+							<div id="nodes_rewards_dollar_monthly" class="text-success">0</div>
+						</div>
+						<div class="col">
+							<div class="fs-6 fw-bold">Balance</div>
+							<div id="nodes_balance">0</div>
+							<div id="nodes_balance_monthly" class="text-success">0</div>
+						</div>
+						<div class="col">
+							<div class="fs-6 fw-bold">Balance ($)</div>
+							<div id="nodes_balance_dollar">0</div>
+							<div id="nodes_balance_dollar_monthly" class="text-success">0</div>
+						</div>
+						<div class="col">
+							<div class="fs-6 fw-bold">Securus</div>
+							<div id="securus_token">0</div>
+							<div id="securus_dollar" class="text-success">0</div>
+						</div>
+					</div>
+				</div>
 			</div>
-		  </div>
 		</div>
 		<div class="p-2"></div>
 		<div id="nodeCards" class="row row-cols-1 row-cols-xl-3 g-4">
-		  <div id="nodeTemplate" class="col d-none">
-			<div class="card h-100 shadow bg-body rounded">
-			  <div class="card-header">			  
-				<div class="d-flex bd-highlight">
-				  <div class="me-auto p-2 bd-highlight fs-5 fw-bold">Node</div>
-				  <div class="p-2 bd-highlight"><i class="bi bi-check-circle-fill text-success" template-id="node_online"></i></div>
+			<div id="nodeTemplate" class="col d-none">
+				<div class="card h-100 shadow bg-body" style="border-radius: .50rem!important;">
+					<div class="card-body">
+						<div class="card-title">
+							<div class="d-flex bd-highlight">
+								<div class="me-auto p-2 bd-highlight fs-5 fw-bold">Node</div>
+								<span template-id="node_online" class="p-2 bd-highlight badge rounded-pill bg-success"
+									style="height: fit-content;">Online</span>
+							</div>
+						</div>
+						<div class="p-2">
+							<div class="row">
+								<div class="col">
+									<div class="fs-6 fw-bold">Claims</div>
+								</div>
+								<div class="col-7" template-id="node_claims">
+
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<div class="fs-6 fw-bold">Rewards</div>
+								</div>
+								<div class="col-7" template-id="node_rewards">
+
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<div class="fs-6 fw-bold">Rewards ($)</div>
+								</div>
+								<div class="col-7" template-id="node_rewards_dollar">
+
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<div class="fs-6 fw-bold">Balance</div>
+								</div>
+								<div class="col-7" template-id="node_balance">
+
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<div class="fs-6 fw-bold">Balance ($)</div>
+								</div>
+								<div class="col-7" template-id="node_balance_dollar">
+
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<div class="fs-6 fw-bold">Last claim</div>
+								</div>
+								<div class="col-7" template-id="node_claim_last">
+
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<div class="fs-6 fw-bold">Last Txn</div>
+								</div>
+								<div class="col-7" template-id="node_txn_last">
+
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-			  </div>
-			  <div class="card-body p-4">
-				  <div class="row">
-					<div class="col">
-					  <div class="fs-6 fw-bold">Claims</div>
-					</div>
-					<div class="col-7" template-id="node_claims">
-					  
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="col">
-					  <div class="fs-6 fw-bold">Rewards</div>
-					</div>
-					<div class="col-7" template-id="node_rewards">
-					  
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="col">
-					  <div class="fs-6 fw-bold">Rewards ($)</div>
-					</div>
-					<div class="col-7" template-id="node_rewards_dollar">
-					
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="col">
-					  <div class="fs-6 fw-bold">Balance</div>
-					</div>
-					<div class="col-7" template-id="node_balance">
-					
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="col">
-					  <div class="fs-6 fw-bold">Balance ($)</div>
-					</div>
-					<div class="col-7" template-id="node_balance_dollar">
-					
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="col">
-					  <div class="fs-6 fw-bold">Last claim</div>
-					</div>
-					<div class="col-7" template-id="node_claim_last">
-					
-					</div>
-				  </div>
-				  <div class="row">
-					<div class="col">
-					  <div class="fs-6 fw-bold">Last Txn</div>
-					</div>
-					<div class="col-7" template-id="node_txn_last">
-					
-					</div>
-				  </div>
-			  </div>
 			</div>
-		  </div>
 		</div>
 	</div>
 	<div class="p-3"></div>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 </body>
+
 </html>
