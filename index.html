@@ -27,6 +27,7 @@
 			}	
 			
 			if (Cookies.get('securusKey') != undefined) {
+			/*
 				$.get('https://explorer.securuscoin.com/api/getbalance/?address=' + Cookies.get('securusKey'))
 				.success(function(data)
 				{	
@@ -34,6 +35,17 @@
 					var balance = parseFloat(data.balance);		
 					$("#securus_token").text(balance.toFixed(2));
 				});
+				
+				$.ajax({
+					url: 'https://explorer.securuscoin.com/api/getbalance/?address=' + Cookies.get('securusKey'),
+					type: 'GET',
+					data: '',
+					crossDomain: true,
+					dataType: 'text',
+					attrs: { nonce: "EDNnf03nceIOfn39fn3e9h3sdfa" },
+					success: function() { alert("Success"); },
+					error: function() { alert('Failed!'); }
+				});*/
 			}
 			
 			$.get('https://brubeck1.streamr.network:3013/apy')
